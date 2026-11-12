@@ -1,5 +1,7 @@
 # claude-quant-skills
 
+[![tests](https://github.com/krish-vd/claude-quant-skills/actions/workflows/tests.yml/badge.svg)](https://github.com/krish-vd/claude-quant-skills/actions/workflows/tests.yml) [![licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+
 **50 Claude skills for investors and traders in Indian and US markets, including commodities and crypto.**
 
 Ask Claude in plain words, for example "how many lots of NIFTY can I trade?", "screen the Nifty 200 for growth leaders", "backtest this idea and tell me if I can trust it" or "what do I owe in capital gains this year?". Claude picks the right skill, runs a tested calculator on official data, and explains the result. It does not guess numbers.
@@ -376,7 +378,7 @@ claude-quant-skills/
 │   └── ...                 sizing, screens, breadth, timing, pairs, journal, and more
 ├── tests/                  215 tests with hand-computed expected values
 ├── scripts/                installer, packager, rulebook document generator
-└── docs/                   RULEBOOK.md (generated), ROADMAP.md
+└── docs/                   CODE_TOUR.md, RULEBOOK.md (generated), ROADMAP.md
 ```
 
 ---
@@ -392,6 +394,8 @@ python scripts/build_rulebook_doc.py                    # after editing the rule
 ```
 
 **Changing a rate:** add a `versions` entry with its `from` date and source, close the previous entry's `to` date, add a hand-computed test, and regenerate the rulebook document. Never overwrite an old rate.
+
+**Reading the code:** start with [docs/CODE_TOUR.md](docs/CODE_TOUR.md), a guide to the cost, backtest and tax code with worked examples to check by hand.
 
 **Adding a skill:** put the logic in `marketcore/` with tests, add a thin script under `skills/<name>/scripts/`, and write `SKILL.md` with a description that says when to use it, how to read the output, and its limits.
 
