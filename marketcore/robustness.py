@@ -188,8 +188,11 @@ def review_report(report: dict) -> dict:
     pit = report.get("point_in_time_universe")
     if pit:
         missing = len(pit.get("missing_price_history") or [])
-        add("info", "survivorship_bias", f"Point-in-time universe used; {missing} historical member(s) have no price history, "
-                                         "so a little bias remains.")
+        rebuilt = (pit.get("rebuilt_from_nse_bhavcopies") or {}).get("stocks", 0)
+        add("info", "survivorship_bias", f"Point-in-time universe used; {rebuilt} delisted or merged member(s) were rebuilt from NSE "
+                                         f"bhavcopies and {missing} still have no price history"
+                                         + (", so some bias remains." if missing else ". Check the result with a 100% delisting haircut, "
+                                            "because an insolvency can be a total loss."))
     elif "Survivorship bias" in cautions:
         severity = "high" if report.get("strategy") in MOMENTUM_STRATEGIES else "medium"
         add(severity, "survivorship_bias", "Tested on today's index members, which already excludes the stocks that fell out. "

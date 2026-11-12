@@ -84,7 +84,10 @@ distance and a score, each computed only from data up to that bar. Indicators in
 - Prices are unofficial and split-adjusted. Recent Indian bars are repaired from
   the NSE bhavcopy (`data/history.py`).
 - Survivorship bias depends on the universe passed in. `data/pit.py` builds a
-  point-in-time universe, but delisted stocks have no price history and drop out.
+  point-in-time universe. `data/bhavprices.py` rebuilds the members that are no
+  longer listed from NSE bhavcopies. A held stock whose series ends more than
+  five sessions before the data ends is closed at its last close, less
+  `delisting_haircut_pct`, with exit reason `delisted`.
 
 **Try it:** `python -m pytest tests/test_indicators_backtest.py -v`. Then read
 `test_entry_fills_at_next_open_not_signal_close` and

@@ -8,8 +8,8 @@ the quarter starts.
 What it fixes: stocks are chosen without hindsight, so companies that were
 large and later shrank are included.
 
-What it cannot fix: a stock that has since been delisted has no price history in
-the free price source, so it still drops out. The result is less biased, not unbiased.
+A stock that has since been delisted has no price history in the free price
+source; ``bhavprices.adjusted_bars`` rebuilds those from NSE's own files.
 """
 from __future__ import annotations
 

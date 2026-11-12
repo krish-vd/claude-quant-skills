@@ -227,10 +227,13 @@ Backtesting on today's index members is the most common way backtests mislead: t
 | Universe | Return a year | Worst drawdown |
 |---|---|---|
 | Today's Nifty 100 members | 29.1% | 39% |
-| Point-in-time: the 100 most traded stocks as of each quarter (`--pit-universe 100`) | 12.1% | 49% |
+| Point-in-time: the 100 most traded stocks as of each quarter, delisted stocks dropped | 12.1% | 49% |
+| Point-in-time, with the 27 delisted, merged and renamed stocks rebuilt from NSE files (`--pit-universe 100`) | **8.8%** | 48% |
 | Nifty 50, buy and hold | 12.05% | 38% |
 
-The apparent edge was the stock list knowing the future. `--pit-universe` rebuilds the universe each quarter from NSE's own daily files back to 2016, so stocks are chosen without hindsight.
+The apparent edge was the stock list knowing the future. `--pit-universe` rebuilds the universe each quarter from NSE's own daily files back to 2016, so stocks are chosen without hindsight. Stocks the price source no longer carries (DHFL, Reliance Capital, HDFC, Sintex, the merged PSU banks and others) are rebuilt from the official NSE bhavcopies. Splits and bonuses are adjusted from NSE's corporate-actions feed. Renamed companies are followed by ISIN (Infibeam to CCAVENUE, NIIT Tech to Coforge). Demerger drops are treated as value passed to the new shares, not as losses. Leaving those 27 stocks out had added 3.4 percentage points a year.
+
+A held stock that stops trading is closed at its last traded price. Use `--delisting-haircut-pct 100` to bound the result as if every delisting were a total loss.
 
 ### Strategies
 
@@ -257,7 +260,8 @@ It can reliably **rule a strategy out**. It cannot promise one will keep working
 
 | Effect | Size | Direction |
 |---|---|---|
-| Delisted stocks still missing from the point-in-time universe | Not measurable with free data | Flatters results |
+| Delisted stocks (now rebuilt from NSE files under `--pit-universe`) | 3.4% a year on the rotation above, when they were missing | Flattered results; now removed |
+| Dividends, rights issues in rebuilt delisted stocks | Small | Not adjusted |
 | Dividends not included | About 1% a year on large caps (median of 88) | Understates; the benchmark too |
 | Slippage | About 0.7% a year per extra 10 bps on a monthly rotation | Depends on real fills |
 | Costs at today's rates for all years | Small | Slightly understates older years |
@@ -405,7 +409,7 @@ python scripts/build_rulebook_doc.py                    # after editing the rule
 
 - **No live data.** Everything is end of day; unfinished sessions are excluded.
 - **Some prices are unofficial.** Long price histories come from Yahoo; Indian closes are checked against NSE, older history is not.
-- **Survivorship bias is reduced, not removed.** Delisted stocks have no free price history.
+- **Survivorship bias: delisted stocks are rebuilt from NSE files**, but only for Indian point-in-time runs. Their dividends and rights issues are not adjusted. A stock whose ISIN changed at a rename is not followed. Today's index lists and hand-picked lists remain biased.
 - **Rates not from primary documents** are listed above and labelled in every output.
 - **Tax scope:** resident individuals, transfers from 1 April 2025; no surcharge, loss set-off, slab tax or non-residents. Not a filing tool.
 - **Indian fundamentals:** about two years (the current filing format), income statement and headline balance-sheet figures only.

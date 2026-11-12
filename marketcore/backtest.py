@@ -24,6 +24,9 @@ from typing import Callable, Optional
 from . import indicators as ind
 
 
+DELIST_GRACE = 5  # sessions a series may end before the data's last day and still count as delisted
+
+
 @dataclass
 class Bars:
     symbol: str
@@ -225,6 +228,7 @@ class Config:
     entries_from: Optional[date] = None  # ignore entry signals before this date (out-of-sample runs)
     regime: Optional[dict] = None  # {date: bool}; entry signals count only on days marked True
     eligible: Optional[Callable] = None  # callable(day) -> set of symbols that may be bought that day
+    delisting_haircut_pct: float = 0.0  # loss applied to the last close when a held stock stops trading for good
 
 
 @dataclass
@@ -269,6 +273,12 @@ def run(data: dict[str, Bars], strategy: Strategy, params: Optional[dict] = None
     index = {s: {d: i for i, d in enumerate(b.dates)} for s, b in data.items()}
     calendar = sorted({d for b in data.values() for d in b.dates})
     slip = cfg.slippage_bps / 10_000.0
+    # A series that stops more than DELIST_GRACE sessions before the data ends has been delisted or
+    # merged away (a shorter gap is more likely a lagging data feed). A position held on its last
+    # session is closed there; otherwise it would sit at the last price forever and block a slot.
+    calendar_pos = {d: i for i, d in enumerate(calendar)}
+    last_session = {s: b.dates[-1] for s, b in data.items() if b.dates
+                    and calendar_pos[b.dates[-1]] < len(calendar) - 1 - DELIST_GRACE}
 
     cash = cfg.initial_capital
     positions: dict[str, Trade] = {}
@@ -350,6 +360,12 @@ def run(data: dict[str, Bars], strategy: Strategy, params: Optional[dict] = None
         # 4. Mark to the close and record equity.
         for s in today:
             last_close[s] = data[s].close[index[s][day]]
+        for s in today:
+            if s in positions and last_session.get(s) == day:
+                close_position(s, day, last_close[s] * (1 - cfg.delisting_haircut_pct / 100.0), "delisted")
+            if last_session.get(s) == day:
+                pending_entry.pop(s, None)
+                pending_exit.discard(s)
         if positions:
             days_in_market += 1
         curve.append((day, equity()))

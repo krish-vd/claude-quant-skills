@@ -32,7 +32,7 @@ Shared library `marketcore`: dated rulebook, charges, cost model, sizing, capita
 
 ## Known gaps, in order of importance
 
-1. **Survivorship bias is reduced, not removed.** `--pit-universe` picks stocks without hindsight, but stocks since delisted have no price history in the free source and drop out. A full fix needs an adjusted price database built from bhavcopies and corporate actions.
+1. **Survivorship bias in rebuilt stocks.** `--pit-universe` picks stocks without hindsight, and stocks missing from the price source are rebuilt from NSE bhavcopies (`marketcore/data/bhavprices.py`): splits and bonuses from NSE's corporate-actions feed, renames followed by ISIN, demerger drops neutralised. Still open: dividends and rights issues in rebuilt stocks, renames where the ISIN also changed, and a US equivalent.
 2. **Backtest prices are unofficial** (Yahoo). Recent Indian sessions are cross-checked or repaired from the NSE bhavcopy; older history is not.
 3. **Secondary-sourced rates:** MCX charges and lot sizes, stamp duty, SEBI fee, BSE charges, advance-tax schedule, audit thresholds. Each needs its primary document.
 4. **Disputed rules:** whether option premium is added to F&O turnover; whether Schedule FA lots are aggregated. Both readings are shown.

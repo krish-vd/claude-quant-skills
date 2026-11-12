@@ -20,7 +20,7 @@ else:
 
 from marketcore import costmodel, indicators, robustness, rules, rulestrategy  # noqa: E402
 from marketcore.backtest import STRATEGIES, Config, run  # noqa: E402
-from marketcore.data import DataUnavailable, pit  # noqa: E402
+from marketcore.data import DataUnavailable, bhavprices, pit  # noqa: E402
 from marketcore.data.history import RANGES, daily_bars, load_universe  # noqa: E402
 
 
@@ -85,6 +85,11 @@ def main() -> int:
     p.add_argument("--pit-universe", type=int, metavar="N",
                    help="India: instead of today's index members, use the N most traded stocks as of each past quarter "
                         "(built from NSE bhavcopies). Reduces survivorship bias. Slow on the first run")
+    p.add_argument("--no-delisted", action="store_true",
+                   help="with --pit-universe: do not rebuild delisted or merged stocks from NSE bhavcopies (skips the slow first-run download, keeps the survivorship bias)")
+    p.add_argument("--delisting-haircut-pct", type=float, default=0.0, metavar="PCT",
+                   help="loss applied to the last traded price when a held stock is delisted or merged away (default 0; "
+                        "100 = every delisting is a total loss, a bound for insolvencies)")
     p.add_argument("--strategy", choices=sorted(STRATEGIES), help="a built-in strategy (or use --rules)")
     p.add_argument("--rules", help="JSON rule file describing a custom strategy (see the strategy-idea-pipeline skill)")
     p.add_argument("--param", action="append", default=[], metavar="NAME=VALUE", help="strategy parameter; repeatable")
@@ -133,6 +138,13 @@ def main() -> int:
             membership = pit.Membership(built["membership"], rename)
             symbols, a.index = sorted(membership.all_symbols()), None
         data, failed, details = load_universe(a.market, symbols, a.index, a.range)
+        recovery = None
+        if membership and failed and not a.no_delisted:
+            print(f"Rebuilding {len(failed)} delisted or merged stocks from NSE bhavcopies "
+                  "(the first run downloads about 2,600 daily files; later runs reuse them)...", file=sys.stderr, flush=True)
+            recovered, recovery = bhavprices.adjusted_bars(set(failed), start, date.today(), progress=True)
+            data.update(recovered)
+            failed = [s for s in failed if s not in recovered]
         if not data:
             raise DataUnavailable("no price history could be loaded for any symbol")
         if membership:
@@ -141,6 +153,12 @@ def main() -> int:
                 "quarters": len(membership.keys),
                 "distinct_stocks_over_the_period": len(symbols),
                 "with_price_history": len(data),
+                "rebuilt_from_nse_bhavcopies": recovery and {
+                    "stocks": len(recovered),
+                    "sessions_read": recovery["sessions_read"],
+                    "days_without_file": recovery["days_without_file"],
+                    "per_stock": recovery["symbols"],
+                },
                 "missing_price_history": failed,
                 "renamed_to_current_symbol": rename,
                 "quarters_without_data": built["skipped_quarters"],
@@ -152,6 +170,7 @@ def main() -> int:
             max_positions=a.max_positions, max_position_pct=a.max_position_pct,
             buy_cost_frac=model.buy_frac, sell_cost_frac=model.sell_frac,
             fixed_cost_per_order=model.fixed_per_order, slippage_bps=a.slippage_bps,
+            delisting_haircut_pct=a.delisting_haircut_pct,
         )
         regime_note = None
         if a.regime_filter:
@@ -209,12 +228,31 @@ def main() -> int:
             )
     if membership:
         missing = len(pit_note["missing_price_history"])
+        rebuilt = pit_note["rebuilt_from_nse_bhavcopies"]
         cautions.append(
-            f"Point-in-time universe: stocks were chosen each quarter from what was most traded then, without hindsight. "
-            f"{missing} of {pit_note['distinct_stocks_over_the_period']} historical members have no price history in the "
-            "price source (delisted, merged or renamed) and are missing, so some survivorship bias remains: the missing "
-            "names are disproportionately the ones that did worst."
+            "Point-in-time universe: stocks were chosen each quarter from what was most traded then, without hindsight."
         )
+        if rebuilt:
+            suspect = {s: e["suspect_jumps"] for s, e in rebuilt["per_stock"].items() if e["suspect_jumps"]}
+            unadjusted = {s: e["not_adjusted"] for s, e in rebuilt["per_stock"].items() if e["not_adjusted"]}
+            cautions.append(
+                f"{rebuilt['stocks']} delisted or merged stocks were rebuilt from official NSE bhavcopies and adjusted for splits "
+                "and bonuses. Dividends, rights issues and demergers are not adjusted. "
+                f"{len(unadjusted)} of them had a demerger, rights issue or unparsed action (see rebuilt_from_nse_bhavcopies.per_stock) "
+                f"and {len(suspect)} still show a one-day move above 35% that may be an unadjusted event."
+            )
+            cautions.append(
+                f"A held stock that stops trading is closed at its last traded price less a {a.delisting_haircut_pct:g}% haircut. "
+                "For a merger that is about right; for an insolvency the true outcome can be a total loss, so check the result "
+                "with --delisting-haircut-pct 100 as a bound."
+            )
+        if missing:
+            cautions.append(
+                f"{missing} of {pit_note['distinct_stocks_over_the_period']} historical members still have no price history "
+                f"({', '.join(pit_note['missing_price_history'][:8])}{'...' if missing > 8 else ''}), so some survivorship bias remains."
+            )
+        elif rebuilt:
+            cautions.append("Every historical member has a price history; survivorship bias from missing delisted stocks is removed.")
         failed = []
     params = shown_params
     if (m.get("closed_trades") or 0) < 30:
