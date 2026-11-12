@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "description": "India: statutory and exchange levies on trades. Rates are fractions of the stated basis (0.001 = 0.1%). Coverage starts 2024-10-01; the calculator refuses earlier trade dates.",
+  "coverage_from": "2024-10-01",
+  "sources": {
+    "nse_stt_2026": {
+      "title": "NSE circular NSE/FATAX/73524 (31 Mar 2026): Changes in relation to rates of Securities Transaction Tax (Finance Act, 2026)",
+      "url": "https://nsearchives.nseindia.com/content/circulars/FATAX73524.pdf",
+      "kind": "primary",
+      "checked_on": "2026-11-12"
+    },
+    "nse_txn_2026": {
+      "title": "NSE circular NSE/FA/73061 (27 Feb 2026): Revision in Transaction Charges",
+      "url": "https://nsearchives.nseindia.com/content/circulars/FA73061.pdf",
+      "kind": "primary",
+      "checked_on": "2026-11-12"
+    },
+    "zerodha_charges": {
+      "title": "Zerodha list of charges (broker page, used as a cross-check)",
+      "url": "https://zerodha.com/charges/",
+      "kind": "secondary",
+      "checked_on": "2026-11-12"
+    }
+  },
+  "rules": [
+    {"id": "stt.equity_delivery", "segment": "equity_delivery", "levy": "stt", "side": "both", "basis": "turnover",
+     "versions": [{"from": "2024-10-01", "to": null, "rate": "0.001"}],
+     "source": "nse_stt_2026", "note": "Rows 1 and 2 of the circular: 0.1% on purchase and on sale, delivery based."},
+
+    {"id": "stt.equity_intraday", "segment": "equity_intraday", "levy": "stt", "side": "sell", "basis": "turnover",
+     "versions": [{"from": "2024-10-01", "to": null, "rate": "0.00025"}],
+     "source": "nse_stt_2026", "note": "Row 3: 0.025% on sale settled otherwise than by delivery."},
+
+    {"id": "stt.etf_delivery", "segment": "etf_delivery", "levy": "stt", "side": "sell", "basis": "turnover",
+     "versions": [{"from": "2024-10-01", "to": null, "rate": "0.00001"}],
+     "source": "nse_stt_2026", "note": "Row 2A: 0.001% on delivery sale of a unit of an equity oriented fund on the exchange. No STT on the purchase."},
+
+    {"id": "stt.futures", "segment": "futures", "levy": "stt", "side": "sell", "basis": "turnover",
+     "versions": [
+       {"from": "2024-10-01", "to": "2026-03-31", "rate": "0.0002"},
+       {"from": "2026-04-01", "to": null, "rate": "0.0005"}],
+     "source": "nse_stt_2026", "note": "Row 4(c)."},
+
+    {"id": "stt.options", "segment": "options", "levy": "stt", "side": "sell", "basis": "premium",
+     "versions": [
+       {"from": "2024-10-01", "to": "2026-03-31", "rate": "0.001"},
+       {"from": "2026-04-01", "to": null, "rate": "0.0015"}],
+     "source": "nse_stt_2026", "note": "Row 4(a)."},
+
+    {"id": "stt.options_exercise", "segment": "options_exercise", "levy": "stt", "side": "buy", "basis": "intrinsic_value",
+     "versions": [
+       {"from": "2024-10-01", "to": "2026-03-31", "rate": "0.00125"},
+       {"from": "2026-04-01", "to": null, "rate": "0.0015"}],
+     "source": "nse_stt_2026", "note": "Row 4(b): paid by the purchaser when a bought option is exercised. The intrinsic-value basis is from the broker cross-check, not this circular."},
+
+    {"id": "txn.nse.cash", "segment": ["equity_delivery", "equity_intraday", "etf_delivery"], "levy": "exchange_txn", "exchange": "NSE", "side": "both", "basis": "turnover",
+     "versions": [
+       {"from": "2024-10-01", "to": "2026-02-28", "rate": "0.0000297"},
+       {"from": "2026-03-01", "to": null, "rate": "0.000030699"}],
+     "source": "nse_txn_2026", "note": "Rs 297, then Rs 306.99, per crore each side."},
+
+    {"id": "txn.nse.futures", "segment": "futures", "levy": "exchange_txn", "exchange": "NSE", "side": "both", "basis": "turnover",
+     "versions": [
+       {"from": "2024-10-01", "to": "2026-02-28", "rate": "0.0000173"},
+       {"from": "2026-03-01", "to": null, "rate": "0.000018299"}],
+     "source": "nse_txn_2026", "note": "Rs 173, then Rs 182.99, per crore each side."},
+
+    {"id": "txn.nse.options", "segment": "options", "levy": "exchange_txn", "exchange": "NSE", "side": "both", "basis": "premium",
+     "versions": [
+       {"from": "2024-10-01", "to": "2026-02-28", "rate": "0.0003503"},
+       {"from": "2026-03-01", "to": null, "rate": "0.000355299"}],
+     "source": "nse_txn_2026", "note": "Rs 3,503, then Rs 3,552.99, per crore of premium each side."},
+
+    {"id": "ipft.nse.cash", "segment": ["equity_delivery", "equity_intraday", "etf_delivery"], "levy": "ipft", "exchange": "NSE", "side": "both", "basis": "turnover",
+     "versions": [
+       {"from": "2024-10-01", "to": "2026-02-28", "rate": "0.000001"},
+       {"from": "2026-03-01", "to": null, "rate": "0.000000001"}],
+     "source": "nse_txn_2026", "note": "NSE Investor Protection Fund Trust contribution: Rs 10, then Rs 0.01, per crore each side."},
+
+    {"id": "ipft.nse.futures", "segment": "futures", "levy": "ipft", "exchange": "NSE", "side": "both", "basis": "turnover",
+     "versions": [
+       {"from": "2024-10-01", "to": "2026-02-28", "rate": "0.000001"},
+       {"from": "2026-03-01", "to": null, "rate": "0.000000001"}],
+     "source": "nse_txn_2026"},
+
+    {"id": "ipft.nse.options", "segment": "options", "levy": "ipft", "exchange": "NSE", "side": "both", "basis": "premium",
+     "versions": [
+       {"from": "2024-10-01", "to": "2026-02-28", "rate": "0.000005"},
+       {"from": "2026-03-01", "to": null, "rate": "0.000000001"}],
+     "source": "nse_txn_2026", "note": "Rs 50, then Rs 0.01, per crore of premium each side."},
+
+    {"id": "txn.bse.cash", "segment": ["equity_delivery", "equity_intraday", "etf_delivery"], "levy": "exchange_txn", "exchange": "BSE", "side": "both", "basis": "turnover",
+     "versions": [{"from": "2026-11-12", "to": null, "rate": "0.0000375"}],
+     "source": "zerodha_charges", "note": "Broker-reported current rate. BSE charges differ for some scrip groups; check the contract note. No history before the check date."},
+
+    {"id": "txn.mcx.futures", "segment": "commodity_futures", "levy": "exchange_txn", "exchange": "MCX", "side": "both", "basis": "turnover",
+     "versions": [{"from": "2026-11-12", "to": null, "rate": "0.000021"}],
+     "source": "zerodha_charges", "note": "Rs 2.10 per lakh. Broker-reported; MCX circular not located."},
+
+    {"id": "txn.mcx.options", "segment": "commodity_options", "levy": "exchange_txn", "exchange": "MCX", "side": "both", "basis": "premium",
+     "versions": [{"from": "2026-11-12", "to": null, "rate": "0.000418"}],
+     "source": "zerodha_charges", "note": "Rs 41.80 per lakh of premium. Broker-reported; MCX circular not located."},
+
+    {"id": "ctt.futures", "segment": "commodity_futures", "levy": "ctt", "side": "sell", "basis": "turnover",
+     "versions": [{"from": "2024-10-01", "to": null, "rate": "0.0001"}],
+     "source": "zerodha_charges", "note": "Commodities Transaction Tax, non-agricultural commodities only. Agricultural commodity futures are exempt: pass agri=True."},
+
+    {"id": "ctt.options", "segment": "commodity_options", "levy": "ctt", "side": "sell", "basis": "premium",
+     "versions": [{"from": "2024-10-01", "to": null, "rate": "0.0005"}],
+     "source": "zerodha_charges"},
+
+    {"id": "sebi.turnover_fee", "segment": ["equity_delivery", "equity_intraday", "etf_delivery", "futures", "options", "commodity_futures", "commodity_options"], "levy": "sebi_fee", "side": "both", "basis": "turnover_or_premium",
+     "versions": [{"from": "2024-10-01", "to": null, "rate": "0.000001"}],
+     "source": "zerodha_charges", "note": "Rs 10 per crore. Agricultural commodity futures are Rs 1 per crore (agri=True)."},
+
+    {"id": "stamp.equity_delivery", "segment": ["equity_delivery", "etf_delivery"], "levy": "stamp_duty", "side": "buy", "basis": "turnover",
+     "versions": [{"from": "2024-10-01", "to": null, "rate": "0.00015"}],
+     "source": "zerodha_charges", "note": "Indian Stamp Act uniform rates in force since 1 Jul 2020. Statute not fetched; broker cross-check only."},
+
+    {"id": "stamp.equity_intraday", "segment": "equity_intraday", "levy": "stamp_duty", "side": "buy", "basis": "turnover",
+     "versions": [{"from": "2024-10-01", "to": null, "rate": "0.00003"}],
+     "source": "zerodha_charges"},
+
+    {"id": "stamp.futures", "segment": ["futures", "commodity_futures"], "levy": "stamp_duty", "side": "buy", "basis": "turnover",
+     "versions": [{"from": "2024-10-01", "to": null, "rate": "0.00002"}],
+     "source": "zerodha_charges"},
+
+    {"id": "stamp.options", "segment": ["options", "commodity_options"], "levy": "stamp_duty", "side": "buy", "basis": "premium",
+     "versions": [{"from": "2024-10-01", "to": null, "rate": "0.00003"}],
+     "source": "zerodha_charges"},
+
+    {"id": "gst", "segment": "*", "levy": "gst", "side": "both", "basis": "brokerage+exchange_txn+ipft+sebi_fee",
+     "versions": [{"from": "2024-10-01", "to": null, "rate": "0.18"}],
+     "source": "zerodha_charges", "note": "18% on brokerage, exchange transaction charges and SEBI fees. Not charged on STT, CTT or stamp duty."}
+  ]
+}

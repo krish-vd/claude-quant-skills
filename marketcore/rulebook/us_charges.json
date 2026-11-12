@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "description": "US: regulatory fees on equity sales. Broker commissions are user-supplied. Options and futures regulatory fees are not covered.",
+  "coverage_from": "2025-05-14",
+  "sources": {
+    "sec_fee_2026": {
+      "title": "SEC Fee Rate Advisory #2 for Fiscal Year 2026 (Section 31 transaction fee)",
+      "url": "https://www.sec.gov/rules-regulations/fee-rate-advisories/2026-2",
+      "kind": "primary",
+      "checked_on": "2026-11-12"
+    },
+    "finra_taf_schedule": {
+      "title": "FINRA fee adjustment schedule, SR-FINRA-2024-019 (Trading Activity Fee rates 2024-2029)",
+      "url": "https://www.finra.org/rules-guidance/rule-filings/sr-finra-2024-019/fee-adjustment-schedule",
+      "kind": "primary",
+      "checked_on": "2026-11-12"
+    },
+    "finra_taf_pause": {
+      "title": "SR-FINRA-2026-021: proposed three-month pause of the Trading Activity Fee (1 Oct - 31 Dec 2026)",
+      "url": "https://www.finra.org/rules-guidance/rule-filings/sr-finra-2026-021",
+      "kind": "unconfirmed",
+      "checked_on": "2026-11-12"
+    }
+  },
+  "rules": [
+    {"id": "us.sec_section31", "levy": "sec_fee", "side": "sell", "basis": "turnover",
+     "versions": [
+       {"from": "2025-05-14", "to": "2026-04-03", "rate": "0"},
+       {"from": "2026-04-04", "to": null, "rate": "0.0000206"}],
+     "source": "sec_fee_2026",
+     "note": "$20.60 per $1,000,000 of sale proceeds from 4 Apr 2026; $0.00 before that. The start date of the $0.00 period (14 May 2025) is from memory of the prior advisory, not re-verified. The rate changes again 60 days after the FY2027 appropriation is enacted."},
+
+    {"id": "us.finra_taf", "levy": "finra_taf", "side": "sell", "basis": "shares",
+     "versions": [
+       {"from": "2025-05-14", "to": "2025-12-31", "rate": "0.000166", "max_per_trade": "8.30"},
+       {"from": "2026-01-01", "to": "2026-09-30", "rate": "0.000195", "max_per_trade": "9.79"},
+       {"from": "2026-10-01", "to": "2026-12-31", "rate": "0", "max_per_trade": "0", "source": "finra_taf_pause", "unconfirmed": true},
+       {"from": "2027-01-01", "to": null, "rate": "0.000195", "max_per_trade": "9.79", "unconfirmed": true}],
+     "source": "finra_taf_schedule",
+     "note": "Per share sold, capped per trade. FINRA filed to pause the fee for Oct-Dec 2026 and to hold 2026 rates through 2028; SEC effectiveness of both filings was not confirmed, so those rows are flagged unconfirmed."}
+  ]
+}

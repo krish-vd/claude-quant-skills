@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "description": "India: capital gains rules for a resident individual. Coverage: transfers on or after 2025-04-01 (FY 2025-26 onward). Earlier years had mid-year rate changes and are refused.",
+  "coverage_from": "2025-04-01",
+  "sources": {
+    "ita2025_s196": {
+      "title": "Income-tax Act, 2025, section 196 (tax on short-term capital gains in certain cases; was section 111A)",
+      "url": "https://www.incometaxindia.gov.in/w/section-196-76",
+      "kind": "primary",
+      "checked_on": "2026-11-12"
+    },
+    "ita2025_secondary": {
+      "title": "Secondary summaries of the Income-tax Act, 2025 capital gains provisions (sections 197, 198; holding periods)",
+      "url": "https://help.myitreturn.com/hc/en-us/articles/60943188924313-Capital-Gains-Holding-Periods-Tax-Rates-Income-Tax-Act-2025",
+      "kind": "secondary",
+      "checked_on": "2026-11-12"
+    },
+    "us_stocks_secondary": {
+      "title": "Broker guides on taxation of US stocks for Indian residents",
+      "url": "https://www.angelone.in/news/taxation/how-us-stocks-are-taxed-in-india-foreign-asset-reporting-capital-gains-and-ftc-explained",
+      "kind": "secondary",
+      "checked_on": "2026-11-12"
+    }
+  },
+  "cess_rate": "0.04",
+  "advance_tax": {
+    "instalments": [
+      {"month": 6, "day": 15, "cumulative_fraction": "0.15"},
+      {"month": 9, "day": 15, "cumulative_fraction": "0.45"},
+      {"month": 12, "day": 15, "cumulative_fraction": "0.75"},
+      {"month": 3, "day": 15, "cumulative_fraction": "1.00"}
+    ],
+    "applies_when_tax_at_least": "10000",
+    "source_kind": "secondary",
+    "source": "https://cleartax.in/guide/interest-imposed-by-the-income-tax-department-section-234c",
+    "checked_on": "2026-11-12",
+    "note": "Instalment schedule and the relief for capital gains arising after a due date, from secondary summaries of section 234C. Statute text not fetched."
+  },
+  "fno_audit": {
+    "turnover_limit_general": "10000000",
+    "turnover_limit_low_cash": "100000000",
+    "source_kind": "secondary",
+    "source": "https://taxguru.in/chartered-accountant/fo-derivative-turnover-calculation-tax-audit-section-44ab.html",
+    "checked_on": "2026-11-12",
+    "note": "Rs 1 crore generally; Rs 10 crore where cash receipts and payments are each within 5%. Whether option premium is added to F&O turnover under the current ICAI guidance note is disputed between sources, so both figures are computed."
+  },
+  "asset_classes": {
+    "listed_equity": {
+      "label": "Listed equity shares, equity-oriented mutual fund units and business trust units, STT paid",
+      "long_term_after_months": 12,
+      "stcg": {"mode": "special_rate", "rate": "0.20", "section_1961": "111A", "section_2025": "196"},
+      "ltcg": {"mode": "special_rate", "rate": "0.125", "exemption_per_fy": "125000", "section_1961": "112A", "section_2025": "198"},
+      "grandfathering_31jan2018": true,
+      "source": ["ita2025_s196", "ita2025_secondary"]
+    },
+    "foreign_equity": {
+      "label": "Shares listed only outside India (for example US stocks) and other unlisted shares",
+      "long_term_after_months": 24,
+      "stcg": {"mode": "slab"},
+      "ltcg": {"mode": "special_rate", "rate": "0.125", "exemption_per_fy": "0", "section_1961": "112", "section_2025": "197"},
+      "grandfathering_31jan2018": false,
+      "source": ["us_stocks_secondary"],
+      "note": "Gains must be computed in INR. Rule 115 conversion (SBI TT buying rate on the last day of the month before the transfer) is not automated: supply INR amounts."
+    },
+    "debt_fund_post_2023": {
+      "label": "Specified (debt-oriented) mutual fund units acquired on or after 1 Apr 2023",
+      "long_term_after_months": null,
+      "stcg": {"mode": "slab"},
+      "ltcg": null,
+      "grandfathering_31jan2018": false,
+      "source": ["ita2025_secondary"],
+      "note": "Always treated as short-term and taxed at slab rates, whatever the holding period (section 50AA of the 1961 Act)."
+    },
+    "listed_other": {
+      "label": "Other listed securities, for example gold and silver ETFs",
+      "long_term_after_months": 12,
+      "stcg": {"mode": "slab"},
+      "ltcg": {"mode": "special_rate", "rate": "0.125", "exemption_per_fy": "0", "section_1961": "112", "section_2025": "197"},
+      "grandfathering_31jan2018": false,
+      "source": ["ita2025_secondary"]
+    },
+    "unlisted_other": {
+      "label": "Other unlisted capital assets, for example gold funds-of-funds and overseas funds-of-funds",
+      "long_term_after_months": 24,
+      "stcg": {"mode": "slab"},
+      "ltcg": {"mode": "special_rate", "rate": "0.125", "exemption_per_fy": "0", "section_1961": "112", "section_2025": "197"},
+      "grandfathering_31jan2018": false,
+      "source": ["ita2025_secondary"]
+    }
+  },
+  "not_handled": [
+    "Surcharge (income above Rs 50 lakh) and its 15% cap on equity gains",
+    "Set-off of losses between buckets and carry-forward from earlier years (reported, not applied)",
+    "Shortfall of the basic exemption limit adjusted against special-rate gains",
+    "Derivatives (F&O) and intraday equity: these are business income, not capital gains",
+    "Buybacks, bonus stripping, corporate actions that change cost (splits, bonuses, demergers)",
+    "Non-residents, HUFs, companies, and the US-person tax view"
+  ]
+}

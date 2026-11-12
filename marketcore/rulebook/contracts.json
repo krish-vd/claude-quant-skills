@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "description": "Futures contract specifications. 'multiplier' is the currency value of a 1.0 move in the quoted price for one contract (one lot). NSE index and stock derivative lot sizes are NOT here: they are read live from NSE's fo_mktlots.csv.",
+  "sources": {
+    "exchange_unverified": {"title": "CME Group contract specifications. The exchange's pages block automated access, so these figures are standard published contract sizes that have NOT been re-checked against the exchange here.", "url": "https://www.cmegroup.com/markets.html", "kind": "unverified", "checked_on": "2026-11-12"},
+    "mcx_blogs": {"title": "MCX lot sizes as reported by broker and education sites (MCX contract pages could not be fetched)", "url": "https://www.mcxindia.com/products", "kind": "secondary", "checked_on": "2026-11-12"}
+  },
+  "contracts": [
+    {"symbol": "ES", "market": "US", "exchange": "CME", "name": "E-mini S&P 500", "multiplier": "50", "tick_size": "0.25", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "NQ", "market": "US", "exchange": "CME", "name": "E-mini Nasdaq-100", "multiplier": "20", "tick_size": "0.25", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "YM", "market": "US", "exchange": "CBOT", "name": "E-mini Dow ($5)", "multiplier": "5", "tick_size": "1", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "RTY", "market": "US", "exchange": "CME", "name": "E-mini Russell 2000", "multiplier": "50", "tick_size": "0.1", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "GC", "market": "US", "exchange": "COMEX", "name": "Gold (100 troy oz)", "multiplier": "100", "tick_size": "0.1", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "SI", "market": "US", "exchange": "COMEX", "name": "Silver (5,000 troy oz)", "multiplier": "5000", "tick_size": "0.005", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "HG", "market": "US", "exchange": "COMEX", "name": "Copper (25,000 lb)", "multiplier": "25000", "tick_size": "0.0005", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "PL", "market": "US", "exchange": "NYMEX", "name": "Platinum (50 troy oz)", "multiplier": "50", "tick_size": "0.1", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "CL", "market": "US", "exchange": "NYMEX", "name": "WTI Crude Oil (1,000 bbl)", "multiplier": "1000", "tick_size": "0.01", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "NG", "market": "US", "exchange": "NYMEX", "name": "Henry Hub Natural Gas (10,000 mmBtu)", "multiplier": "10000", "tick_size": "0.001", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "ZN", "market": "US", "exchange": "CBOT", "name": "10-Year US Treasury Note", "multiplier": "1000", "tick_size": "0.015625", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "ZB", "market": "US", "exchange": "CBOT", "name": "30-Year US Treasury Bond", "multiplier": "1000", "tick_size": "0.03125", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "MES", "market": "US", "exchange": "CME", "name": "Micro E-mini S&P 500", "multiplier": "5", "tick_size": "0.25", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "MNQ", "market": "US", "exchange": "CME", "name": "Micro E-mini Nasdaq-100", "multiplier": "2", "tick_size": "0.25", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "MGC", "market": "US", "exchange": "COMEX", "name": "Micro Gold (10 troy oz)", "multiplier": "10", "tick_size": "0.1", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "SIL", "market": "US", "exchange": "COMEX", "name": "Micro Silver (1,000 troy oz)", "multiplier": "1000", "tick_size": "0.005", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "MCL", "market": "US", "exchange": "NYMEX", "name": "Micro WTI Crude Oil (100 bbl)", "multiplier": "100", "tick_size": "0.01", "currency": "USD", "source": "exchange_unverified"},
+    {"symbol": "GOLD", "market": "IN", "exchange": "MCX", "name": "Gold (1 kg, quoted per 10 g)", "multiplier": "100", "tick_size": "1", "currency": "INR", "source": "mcx_blogs"},
+    {"symbol": "GOLDM", "market": "IN", "exchange": "MCX", "name": "Gold Mini (100 g, quoted per 10 g)", "multiplier": "10", "tick_size": "1", "currency": "INR", "source": "mcx_blogs"},
+    {"symbol": "SILVER", "market": "IN", "exchange": "MCX", "name": "Silver (30 kg, quoted per kg)", "multiplier": "30", "tick_size": "1", "currency": "INR", "source": "mcx_blogs"},
+    {"symbol": "SILVERM", "market": "IN", "exchange": "MCX", "name": "Silver Mini (5 kg, quoted per kg)", "multiplier": "5", "tick_size": "1", "currency": "INR", "source": "mcx_blogs"},
+    {"symbol": "SILVERMIC", "market": "IN", "exchange": "MCX", "name": "Silver Micro (1 kg, quoted per kg)", "multiplier": "1", "tick_size": "1", "currency": "INR", "source": "mcx_blogs"},
+    {"symbol": "CRUDEOIL", "market": "IN", "exchange": "MCX", "name": "Crude Oil (100 bbl)", "multiplier": "100", "tick_size": "1", "currency": "INR", "source": "mcx_blogs"},
+    {"symbol": "CRUDEOILM", "market": "IN", "exchange": "MCX", "name": "Crude Oil Mini (10 bbl)", "multiplier": "10", "tick_size": "1", "currency": "INR", "source": "mcx_blogs"},
+    {"symbol": "NATURALGAS", "market": "IN", "exchange": "MCX", "name": "Natural Gas (1,250 mmBtu)", "multiplier": "1250", "tick_size": "0.1", "currency": "INR", "source": "mcx_blogs"},
+    {"symbol": "NATGASMINI", "market": "IN", "exchange": "MCX", "name": "Natural Gas Mini (250 mmBtu)", "multiplier": "250", "tick_size": "0.1", "currency": "INR", "source": "mcx_blogs"},
+    {"symbol": "COPPER", "market": "IN", "exchange": "MCX", "name": "Copper (2,500 kg, quoted per kg)", "multiplier": "2500", "tick_size": "0.05", "currency": "INR", "source": "mcx_blogs"}
+  ]
+}
